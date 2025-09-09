@@ -1,4 +1,5 @@
-export function formatDateTime(timestamp: Date) {
+export function formatDateTime(timestamp: Date, timezone?: string) {
+  // 'Z' ensures timestamp is parsed as UTC, not local time
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
@@ -7,5 +8,6 @@ export function formatDateTime(timestamp: Date) {
     minute: 'numeric',
     second: 'numeric',
     timeZoneName: 'short',
-  }).format(new Date(timestamp));
+    timeZone: timezone,
+  }).format(new Date(timestamp + 'Z'));
 }
