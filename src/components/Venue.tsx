@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React from "react";
+import { useParams } from "react-router-dom";
 import {
   Flex,
   Heading,
@@ -11,24 +11,25 @@ import {
   Box,
   Spinner,
   AspectRatio,
-} from '@chakra-ui/react';
-import Breadcrumbs from './Breadcrumbs';
-import Error from './Error';
-import { useSeatGeek } from '../utils/useSeatGeek';
+} from "@chakra-ui/react";
+import Breadcrumbs from "./Breadcrumbs";
+import Error from "./Error";
+import { useSeatGeek } from "../utils/useSeatGeek";
+import FavoriteButton from "./FavoriteButton";
 
 interface StatsProps {
   venue: {
     city: string;
     country: string;
     capacity: number;
-  }
+  };
 }
 
 interface MapProps {
   location: {
     lat: number;
     lon: number;
-  }
+  };
 }
 
 const Venue: React.FC = () => {
@@ -42,20 +43,29 @@ const Venue: React.FC = () => {
       <Flex justifyContent="center" alignItems="center" minHeight="50vh">
         <Spinner size="lg" />
       </Flex>
-    )
+    );
   }
 
   return (
     <>
       <Breadcrumbs
         items={[
-          { label: 'Home', to: '/' },
-          { label: 'Venues', to: '/venues' },
+          { label: "Home", to: "/" },
+          { label: "Venues", to: "/venues" },
           { label: venue.name },
-        ]} 
+        ]}
       />
       <Flex bgColor="gray.200" p={[4, 6]}>
         <Heading>{venue.name}</Heading>
+        <FavoriteButton
+          item={{
+            id: venue.id,
+            type: "venue",
+            title: venue.short_title,
+            subtitle: venue.venue.name_v2,
+            link: `/venues/${venue.id}`,
+          }}
+        />
       </Flex>
       <Stats venue={venue} />
       <Map location={venue.location} />
@@ -64,12 +74,12 @@ const Venue: React.FC = () => {
 };
 
 const Stats: React.FC<StatsProps> = ({ venue }) => (
-  <SimpleGrid 
-    columns={[1, 1, 2]} 
-    borderWidth="1px" 
-    borderRadius="md" 
-    m="6" 
-    p="4" 
+  <SimpleGrid
+    columns={[1, 1, 2]}
+    borderWidth="1px"
+    borderRadius="md"
+    m="6"
+    p="4"
   >
     <Stat>
       <StatLabel display="flex">
