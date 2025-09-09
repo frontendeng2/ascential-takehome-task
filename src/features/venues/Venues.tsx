@@ -1,0 +1,77 @@
+import React from 'react';
+import { SimpleGrid, Flex, Spinner, Heading, Text, Box, Badge, LinkBox, LinkOverlay } from '@chakra-ui/react';
+import { Link as BrowserLink } from 'react-router-dom';
+import { useSeatGeek } from '../../hooks/useSeatGeek';
+import Error from '../../pages/Error';
+import Breadcrumbs from '../../components/Breadcrumbs';
+import FavoriteButton from '../../components/FavoriteButton';
+import { createFavorite } from '../../utils/createFavorite';
+
+export interface VenueProps {
+  id: number;
+  has_upcoming_events: boolean;
+  num_upcoming_events: number;
+  name_v2: string;
+  display_location: string;
+  name: string;
+}
+
+interface VenuItemProps {
+  venue: VenueProps;
+}
+
+const Venues: React.FC = () => {
+  const { data, error } = useSeatGeek('/venues', { 
+    sort: 'score.desc',
+    per_page: '24',
+  });
+
+  if (error) return <Error />;
+
+  if (!data) {
+    return (
+      <Flex justifyContent="center" alignItems="center" minHeight="50vh">
+        <Spinner size="lg" />
+      </Flex>
+    )
+  }
+
+  return (
+    <>
+      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Venues' }]} />
+      <SimpleGrid spacing="6" m="6" minChildWidth="350px">
+        {data.venues?.map((venue: VenueProps) => (
+          <VenueItem key={venue.id.toString()} venue={venue} />
+        ))}
+      </SimpleGrid>
+    </>
+  );
+};
+
+const VenueItem: React.FC<VenuItemProps> = ({ venue }) => (
+  <LinkBox>
+    <Box        
+      p={[4, 6]}
+      bg="gray.50"
+      borderColor="gray.200"
+      borderWidth="1px"
+      rounded="lg"
+      _hover={{ bg: 'gray.100' }}
+    >
+      <Flex justify="space-between" align="center">
+        <Heading size='sm' noOfLines={1}>
+          <LinkOverlay as={BrowserLink} to={`/venues/${venue.id}`}>
+            {venue.name_v2}
+          </LinkOverlay>
+        </Heading>
+        <FavoriteButton item={createFavorite(venue)} />
+      </Flex>
+      <Badge colorScheme={venue.has_upcoming_events ? 'green' : 'red'} mt="2">
+        {`${venue.has_upcoming_events ? venue.num_upcoming_events : 'No'} Upcoming Events`}
+      </Badge>
+      <Text fontSize="sm" color="gray.500">{venue.display_location}</Text>
+    </Box>
+  </LinkBox>
+);
+
+export default Venues;
